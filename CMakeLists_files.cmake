@@ -31,6 +31,7 @@ list (APPEND MAIN_SOURCE_FILES
 	opm/geomech/FlexibleSolverMech.cpp
 	opm/geomech/Fracture_fullSystemIteration.cpp
 	opm/geomech/FractureMechanicsPreconditioner.cpp
+	opm/geomech/FractureConfiguration.cpp
 	opm/geomech/Fracture.cpp
 	opm/geomech/FractureModel.cpp
 	opm/geomech/FractureWell.cpp
@@ -64,6 +65,7 @@ list (APPEND PUBLIC_HEADER_FILES
 	opm/geomech/ElasticitySolver_impl.hpp
 	opm/geomech/FlowGeoMechLinearSolverParameters.hpp
 	opm/geomech/FracturePressureAssemblerAD.hpp
+	opm/geomech/FractureConfiguration.hpp
 	opm/geomech/FractureConnectionId.hpp
 	opm/geomech/Fracture.hpp
 	opm/geomech/Fracture_impl.hpp

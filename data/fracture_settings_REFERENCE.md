@@ -3,6 +3,23 @@
 Companion to `fracture_simple_bhp_seq_final.json`. JSON (boost property_tree) has **no comments**, so
 the JSON uses harmless `"__…"` divider keys (ignored by the reader) and this file documents every option.
 
+Parameter files are now checked for known key placement, scalar types, selected
+bounds and supported mode combinations before use. Numeric/boolean strings remain
+supported; unit suffixes are not. Startup and per-WSEED JSON reports in the simulator
+log record validated input and seed overrides. See
+[`tests/validated_fracture_configuration.md`](../tests/validated_fracture_configuration.md)
+for units, report scope, compatibility and reproduction details.
+
+On the clean geomech line, `fractureparam.vem_face_quadrature` accepts `kite`
+(the current VEM default) or `triangulated`. Sector-grid keys such as
+`box_from_flow` belong in the separate `--mech-sector-file`, not this fracture
+parameter file. Removed `fractureparam.solver.damping_p` and `damping_w` settings
+are rejected. Retained compatibility-only fields, including `hasfractures`,
+`control.WI` and `solver.full_intersections` inside `fractureparam`, are identified
+in the report rather than described as active controls. Deck FRAC controls
+activation; `solver.divide_wellidx` is the active setting associated with the
+legacy `full_intersections` variable.
+
 ## 0. Recommended values (validated June 2026)
 
 Validated on the SEQ regression deck (`SIMPLE_MECH_NX_11_NY_11_NZ_25_FRAC_SEQ`, converges, full growth)

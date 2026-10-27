@@ -1021,3 +1021,10 @@ add_test(NAME BANDTEST_geomech_best_practice_fb
                  --bhp-min 220 --bhp-max 285
                  --area-min 400 --area-max 3000
                  --open-frac-min 0.5)
+
+# Configuration checks require neither the simulator nor MPI initialization.
+add_executable(test_fracture_configuration tests/test_fracture_configuration.cpp)
+target_link_libraries(test_fracture_configuration PRIVATE opmflowgeomechanics)
+add_test(NAME Unit.FractureConfiguration
+    COMMAND test_fracture_configuration ${PROJECT_SOURCE_DIR})
+set_tests_properties(Unit.FractureConfiguration PROPERTIES TIMEOUT 30 LABELS "configuration;unit")
