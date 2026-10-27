@@ -46,6 +46,7 @@
 #include <opm/grid/common/CommunicationUtils.hpp>
 
 #include <opm/geomech/FractureModel.hpp>
+#include <opm/geomech/FractureConfiguration.hpp>
 #include <opm/geomech/MechGridContext.hpp>
 
 #include <opm/simulators/flow/FlowProblemParameters.hpp>
@@ -153,11 +154,11 @@ namespace Opm{
             Base(simulator)
         {
             std::string filename = Parameters::Get<Parameters::FractureParamFile>();
+            std::string fractureParamSource = filename == "notafile" ? "C++ defaults" : filename;
             if (filename == "notafile") {
                 Opm::PropertyTree fracture_param = makeDefaultFractureParam(false);
                 fracture_param_ = fracture_param;
             } else {
-                std::string fractureParamSource = filename;
                 try {
                     if (Detail::fractureParamFileExists(filename)) {
                         Opm::PropertyTree fracture_param(filename);
@@ -169,17 +170,19 @@ namespace Opm{
                         Opm::PropertyTree fracture_param(filename);
                         fracture_param_ = fracture_param;
                     }
-                } catch (...) {
+                } catch (const std::exception& error) {
                     std::stringstream ss;
                     ss << "No fracture parameter file or error reading it: " << fractureParamSource
-                       << " : Simulation stopped: correct file or use default";
+                       << " : Simulation stopped: correct file or use default: " << error.what();
                     OpmLog::warning(ss.str());
                     OPM_THROW(std::runtime_error, ss.str());
                 }
             }
-            std::stringstream os;
-            fracture_param_.write_json(os, true);
-            OpmLog::info(os.str());
+            validateFractureConfiguration(fracture_param_, fractureParamSource);
+            if (this->simulator().gridView().comm().rank() == 0) {
+                OpmLog::info("Validated fracture configuration:\n" +
+                    fractureConfigurationReport(fracture_param_, fractureParamSource));
+            }
 
             hasFractures_ = this->simulator().vanguard().eclState().runspec().frac();
                         const bool waterActive = this->simulator().vanguard().eclState().runspec().phases().active(Opm::Phase::WATER);

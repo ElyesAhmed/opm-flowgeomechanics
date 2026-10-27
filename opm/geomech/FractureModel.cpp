@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include <opm/geomech/FractureModel.hpp>
+#include <opm/geomech/FractureConfiguration.hpp>
 
 #include <opm/common/OpmLog/OpmLog.hpp>
 
@@ -591,8 +592,7 @@ Opm::FractureModel::addFracturesWellSeed(const ScheduleState& sched,
             // config.min_width remains only for standalone/test setups without a
             // deck WSEED. Note this is distinct from solver.min_width (a
             // numerical clamp inside the width solve).
-            prm_.put("config.axis_scale", frac_size[0]); // vertical scale
-            prm_.put("config.min_width", frac_size[2]);
+            const auto seedParam = fractureSeedConfiguration(prm_, frac_size[0], frac_size[2]);
             OpmLog::info("Fracture seed on " + fracWell.name()
                          + ": flow-width floor (WSEED WIDTH) = "
                          + std::to_string(frac_size[2]) + " m");
@@ -604,6 +604,10 @@ Opm::FractureModel::addFracturesWellSeed(const ScheduleState& sched,
             // WSEED cells, so this keeps activation working for connections
             // completed inside an LGR too.
             int globalIndex = static_cast<int>(wseed.seedCells()[seedPos->second]);
+            const auto identity = fracWell.connectionIdentity(elemIdx);
+            OpmLog::info("Effective fracture seed configuration:\n" +
+                fractureSeedConfigurationReport(seedParam, fracWell.name(), globalIndex,
+                    static_cast<int>(identity.global_index), identity.lgr_level));
             this->well_fractures_[wellIx].emplace_back().init(
                 fracWell.name(),
                 /* connection index */ elemIdx,
@@ -613,8 +617,8 @@ Opm::FractureModel::addFracturesWellSeed(const ScheduleState& sched,
                 /* distance range */ fracWell.perfRange(elemIdx),
                 /* seed origin */ elem.geometry().corner(1),
                 /* fracturing plane's normal vector */ normal,
-                this->prm_,
-                fracWell.connectionIdentity(elemIdx));
+                seedParam,
+                identity);
         }
     }
 }

@@ -7,8 +7,7 @@
         "method": "SeqMechFrac",
         "implicit_flow": "true",
         "max_mech_it": "90",
-        "max_frac_it": "90",
-        "ctf_change_threshold": "1e-15"
+        "max_frac_it": "90"
     },
     "fractureparam": {
         "method": {
